@@ -1,0 +1,793 @@
+1
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>LendPlus · apply with confidence</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Font: Inter (clean, modern) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- CSS reset / base ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f7fc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      line-height: 1.5;
+      color: #1a1f36;
+    }
+
+    /* subtle background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle at 25% 20%, rgba(100, 130, 250, 0.03) 0%, transparent 30%),
+                        radial-gradient(circle at 80% 70%, rgba(0, 170, 150, 0.03) 0%, transparent 35%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* main card – all content */
+    .lend-card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 680px;
+      background: #ffffff;
+      border-radius: 2rem;
+      box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.18), 0 8px 24px -6px rgba(0, 20, 30, 0.1);
+      padding: 2rem 2rem 2rem 2rem;
+      transition: all 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(2px);
+    }
+
+    /* header area */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #eef2f9;
+      padding-bottom: 1.25rem;
+    }
+
+    .brand-icon {
+      background: linear-gradient(145deg, #1e2b5e, #0b1a3f);
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      box-shadow: 0 8px 16px -6px rgba(10, 25, 60, 0.25);
+    }
+
+    .brand-icon i {
+      filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.2));
+    }
+
+    .brand-text {
+      font-weight: 700;
+      font-size: 1.7rem;
+      letter-spacing: -0.03em;
+      color: #0b1a3f;
+    }
+
+    .brand-text span {
+      color: #2d6af6;
+      font-weight: 700;
+    }
+
+    .badge {
+      background: #e8edff;
+      color: #1e3fa6;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      border-radius: 100px;
+      letter-spacing: 0.3px;
+      margin-left: auto;
+      text-transform: uppercase;
+      border: 1px solid #cddbff;
+    }
+
+    /* progress steps (only visual) */
+    .steps {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding: 0 0.25rem;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 16px;
+      left: 60%;
+      width: 80%;
+      height: 2px;
+      background: #dfe6f0;
+      z-index: 1;
+    }
+
+    .step.active:not(:last-child)::after {
+      background: #2d6af6;
+    }
+
+    .step-circle {
+      width: 36px;
+      height: 36px;
+      background: #f0f4fd;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #5f6b7f;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      margin-bottom: 0.35rem;
+      z-index: 2;
+      background-color: white;
+      border-color: #dae2f0;
+    }
+
+    .step.active .step-circle {
+      background: #2d6af6;
+      border-color: #2d6af6;
+      color: white;
+      box-shadow: 0 6px 12px -6px #2d6af6;
+    }
+
+    .step.completed .step-circle {
+      background: #2d6af6;
+      border-color: #2d6af6;
+      color: white;
+    }
+
+    .step-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #6e7c91;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .step.active .step-label {
+      color: #2d6af6;
+    }
+
+    /* payment emphasis card */
+    .payment-required {
+      background: #fff9eb;
+      border-left: 5px solid #f5b342;
+      padding: 1rem 1.25rem;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 4px 12px rgba(245, 179, 66, 0.08);
+      border: 1px solid #ffe6b8;
+    }
+
+    .payment-icon {
+      background: #fff2d6;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #c07c0e;
+      font-size: 1.4rem;
+    }
+
+    .payment-text h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #5c3e0a;
+      margin-bottom: 0.2rem;
+    }
+
+    .payment-text p {
+      font-size: 0.85rem;
+      color: #8a6d3b;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .fee-badge {
+      background: #ffffffd0;
+      padding: 0.15rem 0.6rem;
+      border-radius: 100px;
+      font-weight: 700;
+      color: #a3660b;
+      font-size: 0.8rem;
+      border: 1px solid #f5cf8c;
+    }
+
+    /* form elements */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #2a3348;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+
+    label i {
+      color: #2d6af6;
+      margin-right: 0.35rem;
+      font-size: 0.8rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      background: #f9fbfe;
+      border: 1.5px solid #e2e8f2;
+      border-radius: 1rem;
+      transition: 0.15s ease;
+      color: #141b2e;
+      font-weight: 500;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2d6af6;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(45, 106, 246, 0.12);
+    }
+
+    input::placeholder {
+      color: #9ba9be;
+      font-weight: 400;
+      font-size: 0.9rem;
+    }
+
+    .input-hint {
+      font-size: 0.7rem;
+      color: #7d8b9f;
+      margin-top: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* loan amount row */
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    /* action area: pay + apply */
+    .action-section {
+      margin: 2rem 0 1.5rem;
+      border-top: 1px dashed #dbe2ed;
+      padding-top: 1.75rem;
+    }
+
+    .pay-button {
+      background: #f7f9fe;
+      border: 1.5px solid #d7e0f0;
+      border-radius: 1.5rem;
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      transition: 0.2s;
+    }
+
+    .pay-button.paid {
+      background: #e6f7ee;
+      border-color: #86d8a8;
+    }
+
+    .pay-info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .pay-info i {
+      font-size: 1.3rem;
+      color: #2d6af6;
+      width: 1.8rem;
+      text-align: center;
+    }
+
+    .pay-info.paid i {
+      color: #1a8b4c;
+    }
+
+    .pay-info h5 {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1b243a;
+    }
+
+    .pay-info p {
+      font-size: 0.75rem;
+      color: #6e7c91;
+    }
+
+    .fee-amount {
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: #1b243a;
+      letter-spacing: -0.02em;
+    }
+
+    .fee-amount small {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #5f6b7f;
+      letter-spacing: normal;
+    }
+
+    .btn-pay {
+      background: #1b2b4e;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.7rem 1.6rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      box-shadow: 0 6px 14px -6px #1b2b4e80;
+    }
+
+    .btn-pay:hover {
+      background: #0f1e3a;
+      transform: scale(1.01);
+    }
+
+    .btn-pay:active {
+      transform: scale(0.98);
+    }
+
+    .btn-pay:disabled {
+      background: #b9c3d6;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-pay.paid-style {
+      background: #1a8b4c;
+      box-shadow: 0 6px 14px -6px #1a8b4c;
+    }
+
+    .btn-pay.paid-style:disabled {
+      background: #7cb894;
+      cursor: default;
+    }
+
+    /* apply button */
+    .btn-apply {
+      width: 100%;
+      background: #2d6af6;
+      border: none;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 1rem 1.5rem;
+      border-radius: 1.5rem;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      box-shadow: 0 12px 20px -10px #2d6af6;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-apply:hover:not(:disabled) {
+      background: #1a4fd0;
+      transform: translateY(-2px);
+      box-shadow: 0 18px 28px -12px #2d6af6;
+    }
+
+    .btn-apply:disabled {
+      background: #cdd9f0;
+      box-shadow: none;
+      color: #7f8ea8;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-apply i {
+      font-size: 1.1rem;
+    }
+
+    /* lock note */
+    .apply-lock-note {
+      font-size: 0.75rem;
+      color: #6e7c91;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      text-align: center;
+      flex-wrap: wrap;
+    }
+
+    .apply-lock-note i {
+      color: #f5b342;
+    }
+
+    /* responsiveness */
+    @media (max-width: 540px) {
+      body {
+        padding: 0.75rem;
+      }
+
+      .lend-card {
+        padding: 1.5rem 1.25rem;
+        border-radius: 1.5rem;
+      }
+
+      .brand-text {
+        font-size: 1.4rem;
+      }
+
+      .step-circle {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+      }
+
+      .step:not(:last-child)::after {
+        top: 14px;
+        left: 55%;
+        width: 70%;
+      }
+
+      .row-2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .pay-button {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .fee-amount {
+        text-align: left;
+      }
+
+      .btn-pay {
+        justify-content: center;
+      }
+
+      .payment-required {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .btn-apply {
+        font-size: 1rem;
+        padding: 0.9rem 1rem;
+      }
+    }
+
+    /* success / toast feedback (hidden by default) */
+    .toast-message {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1a2c4e;
+      color: white;
+      padding: 0.8rem 1.6rem;
+      border-radius: 3rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: 0.25s ease;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .toast-message.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast-message i {
+      color: #b0e0b0;
+    }
+
+    /* footer note */
+    .legal-note {
+      font-size: 0.7rem;
+      text-align: center;
+      color: #8b99ae;
+      margin-top: 1.2rem;
+      border-top: 1px solid #edf1f9;
+      padding-top: 1.2rem;
+      line-height: 1.5;
+    }
+
+    .legal-note i {
+      margin-right: 0.2rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="lend-card">
+  <!-- header -->
+  <div class="brand">
+    <div class="brand-icon">
+      <i class="fas fa-bolt"></i>
+    </div>
+    <div class="brand-text">Lend<span>Plus</span></div>
+    <div class="badge"><i class="fas fa-shield-alt" style="margin-right: 0.2rem;"></i>secure</div>
+  </div>
+
+  <!-- steps -->
+  <div class="steps">
+    <div class="step completed">
+      <div class="step-circle"><i class="fas fa-check" style="font-size: 0.8rem;"></i></div>
+      <span class="step-label">Verify</span>
+    </div>
+    <div class="step active">
+      <div class="step-circle">2</div>
+      <span class="step-label">Apply</span>
+    </div>
+    <div class="step">
+      <div class="step-circle">3</div>
+      <span class="step-label">Funds</span>
+    </div>
+  </div>
+
+  <!-- PAY BEFORE APPLYING (main highlight) -->
+  <div class="payment-required">
+    <div class="payment-icon">
+      <i class="fas fa-file-invoice-dollar"></i>
+    </div>
+    <div class="payment-text">
+      <h4>Application fee required</h4>
+      <p>
+        <span class="fee-badge">$24.99</span> 
+        <i class="fas fa-circle" style="font-size: 4px; color: #b8a06b;"></i> 
+        one-time, refundable on approval
+      </p>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form id="loanForm" onsubmit="return false;">
+    <!-- full name -->
+    <div class="form-group">
+      <label for="fullName"><i class="fas fa-user"></i> Full name</label>
+      <input type="text" id="fullName" placeholder="e.g. Sarah K. Johnson" autocomplete="name">
+    </div>
+
+    <!-- email + phone -->
+    <div class="row-2">
+      <div class="form-group">
+        <label for="email"><i class="fas fa-envelope"></i> Email</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="phone"><i class="fas fa-phone"></i> Phone</label>
+        <input type="tel" id="phone" placeholder="(555) 000-0000" autocomplete="tel">
+      </div>
+    </div>
+
+    <!-- loan amount + term -->
+    <div class="row-2">
+      <div class="form-group">
+        <label for="loanAmount"><i class="fas fa-dollar-sign"></i> Loan amount</label>
+        <input type="number" id="loanAmount" placeholder="5,000" min="100" max="50000" step="100">
+        <div class="input-hint"><i class="fas fa-circle-info"></i> $500 – $50,000</div>
+      </div>
+      <div class="form-group">
+        <label for="loanTerm"><i class="fas fa-calendar"></i> Term</label>
+        <select id="loanTerm">
+          <option value="12">12 months</option>
+          <option value="24" selected>24 months</option>
+          <option value="36">36 months</option>
+          <option value="48">48 months</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ACTION: pay fee first, then apply -->
+    <div class="action-section">
+      <!-- payment row -->
+      <div class="pay-button" id="payButtonContainer">
+        <div class="pay-info" id="payInfo">
+          <i class="fas fa-lock" id="payIcon"></i>
+          <div>
+            <h5>Application fee</h5>
+            <p id="paymentStatusText">pay before applying</p>
+          </div>
+        </div>
+        <div class="fee-amount" id="feeDisplay">$24.99 <small>USD</small></div>
+        <button type="button" id="payNowBtn" class="btn-pay">
+          <i class="fas fa-credit-card"></i> Pay now
+        </button>
+      </div>
+
+      <!-- apply button (locked until paid) -->
+      <button type="submit" id="applyBtn" class="btn-apply" disabled>
+        <i class="fas fa-paper-plane"></i> Submit application
+      </button>
+      <div class="apply-lock-note" id="lockNote">
+        <i class="fas fa-lock"></i> Pay the application fee to unlock applying
+      </div>
+    </div>
+  </form>
+
+  <!-- tiny legal -->
+  <div class="legal-note">
+    <i class="fas fa-shield-halved"></i> Your data is encrypted · No impact on credit score
+  </div>
+</div>
+
+<!-- toast for feedback -->
+<div id="toast" class="toast-message">
+  <i class="fas fa-check-circle"></i> <span id="toastText">Payment successful</span>
+</div>
+
+<script>
+  (function() {
+    'use strict';
+
+    // DOM elements
+    const payBtn = document.getElementById('payNowBtn');
+    const applyBtn = document.getElementById('applyBtn');
+    const payButtonContainer = document.getElementById('payButtonContainer');
+    const payInfo = document.getElementById('payInfo');
+    const paymentStatusText = document.getElementById('paymentStatusText');
+    const payIcon = document.getElementById('payIcon');
+    const lockNote = document.getElementById('lockNote');
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+
+    // State
+    let isPaid = false;
+    let toastTimer = null;
+
+    // Helper: show toast
+    function showToast(message, isSuccess = true) {
+      toastText.textContent = message;
+      toast.style.background = isSuccess ? '#1a2c4e' : '#b33a3a';
+      const icon = toast.querySelector('i');
+      if (isSuccess) {
+        icon.className = 'fas fa-check-circle';
+        icon.style.color = '#b0e0b0';
+      } else {
+        icon.className = 'fas fa-exclamation-circle';
+        icon.style.color = '#ffb3b3';
+      }
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2800);
+    }
+
+    // Update UI based on payment state
+    function setPaidState(paid) {
+      isPaid = paid;
+
+      if (paid) {
+        // payment container style
+        payButtonContainer.classList.add('paid');
+        payInfo.classList.add('paid');
+
+        // icon change
+        payIcon.className = 'fas fa-check-circle';
+        payIcon.style.color = '#1a8b4c';
+
+        // status text
+        paymentStatusText.textContent = 'fee paid · thank you!';
+        paymentStatusText.style.color = '#1a8b4c';
+        paymentStatusText.style.fontWeight = '600';
+
+        // pay button becomes disabled, green, shows "Paid"
+        payBtn.disabled = true;
+        payBtn.classList.add('paid-style');
+        payBtn.innerHTML = '<i class="fas fa-check"></i> Paid';
+
+        // enable apply button
+        applyBtn.disabled = false;
+
+        // lock note update
+        lockNote.innerHTML = '<i class="fas fa-check-circle" style="color: #1a8b4c;"></i> You can now submit your application';
+        lockNote.style.color = '#1a8b4c';
+        lockNote.style.fontWeight = '500';
+
+      } else {
+        // revert (not really needed after payment, but for consistency)
+        payButtonContainer.classList.remove('paid');
+        payInfo.classList.remove('paid');
+        payIcon.className = 'fas fa-lock';
+        payIcon.style.color = '#2d6af6';
+        paymentStatusText.textContent = 'pay before applying';
+        paymentStatusText.style.color = '#6e7c91';
+        paymentStatusText.style.fontWeight = 'normal';
+        payBtn.disabled = false;
+        payBtn.classList.remove('paid-style');
+        payBtn.innerHTML = '<i class="fas fa-credit-card"></i> Pay now';
+        applyBtn.disabled = true;
+        lockNote.innerHTML = '<i class="fas fa-lock"></i> Pay the application fee to unlock applying';
+        lockNote.style.color = '#6e7c91';
+        lockNote.style.fontWeight = 'normal';
+      }
+    }
+
+    // simulate payment (no real gateway)
+    function processPayment() {
+      if (isPaid) return;
+
+      // disable button to prevent double-click
+      payBtn.disabled = true;
+      payBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Processing...';
+
+      // Simulate network request
+      setTimeout(() => {
+        // 95% success rate simulation – but we want positive UX, so always succeed (except demo maybe)
+        // To keep it predictable and frien
